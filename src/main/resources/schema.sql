@@ -1,0 +1,104 @@
+/* 管理者情報テーブル */
+CREATE TABLE IF NOT EXISTS admin (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    admin_address VARCHAR(255) NOT NULL,
+    admin_password VARCHAR(255) NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+/* 会員情報テーブル */
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(50) NOT NULL,
+    mail_address VARCHAR(255) NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+    user_post_code VARCHAR(8) NOT NULL,
+    user_address VARCHAR(255) NOT NULL,
+    user_phone_number VARCHAR(14) NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+/* カテゴリテーブル */
+CREATE TABLE IF NOT EXISTS category (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+/* 店舗情報テーブル */
+CREATE TABLE IF NOT EXISTS stores (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    store_name VARCHAR(255) NOT NULL,
+    photo_name VARCHAR(50),
+    description VARCHAR(255) NOT NULL,
+    min_budget INT NOT NULL,
+    max_budget INT NOT NULL, 
+    open_hour TIME NOT NULL,
+    close_hour TIME NOT NULL,
+    store_post_code VARCHAR(8) NOT NULL,
+    store_address VARCHAR(255) NOT NULL,
+    store_phone_number VARCHAR(14) NOT NULL,
+    close_day VARCHAR(50) NOT NULL,
+    seats INT NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES category (id)
+);
+
+/* 予約テーブル */
+CREATE TABLE IF NOT EXISTS reserve (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    store_id INT NOT NULL,
+    reserve_date DATE NOT NULL,
+    reserve_time TIME NOT NULL,
+    reserve_count INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (store_id) REFERENCES stores (id)
+);
+
+/* レビューテーブル */
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    score INT NOT NULL,
+    content TEXT NOT NULL,   
+    user_id INT NOT NULL,
+	store_id INT NOT NULL, 
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (store_id, user_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (store_id) REFERENCES stores (id)
+);
+
+/* お気に入りテーブル */
+CREATE TABLE IF NOT EXISTS favorites (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+	store_id INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (store_id, user_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (store_id) REFERENCES stores (id)
+);
+
+/* 会社情報テーブル */
+CREATE TABLE IF NOT EXISTS company (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    company_name VARCHAR(30) NOT NULL,
+    president VARCHAR(10) NOT NULL,
+    est VARCHAR(10) NOT NULL,
+    company_post_code VARCHAR(8) NOT NULL,
+    company_address VARCHAR(255) NOT NULL,
+    company_phone_number VARCHAR(14) NOT NULL,
+    business_content VARCHAR(255) NOT NULL,
+    create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
