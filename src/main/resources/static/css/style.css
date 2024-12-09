@@ -69,7 +69,26 @@ html {
    white-space: pre-wrap;
  }
  
+  .nagoyameshi-link-danger {
+     color: #f2594b;
+ }
  
+ .nagoyameshi-link-danger:hover {
+     color: #a63c3c;
+ }
+ 
+ .nagoyameshi-btn-danger {
+     background-color: #f2594b !important;
+     transition: 0.1s;
+ }
+ 
+ .nagoyameshi-btn-danger:hover {
+   opacity: 0.8;   
+ }
+ 
+  .nagoyameshi-dropdown-item:active {
+   background-color: #5196a6;
+ }
  
  @media screen and (min-width: 1400px) {
    .nagoyameshi-container {

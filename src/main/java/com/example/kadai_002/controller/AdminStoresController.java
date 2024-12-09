@@ -82,7 +82,7 @@ public class AdminStoresController {
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable(name = "id") Integer id, Model model) {
         Stores stores = storesRepository.getReferenceById(id);
-        String imageName = stores.getStoreName();
+        String imageName = stores.getPhotoName();
         StoresEditForm storesEditForm = new StoresEditForm(stores.getId(), stores.getStoreName(), null, stores.getDescription(), stores.getMinBudget(), stores.getMaxBudget(), stores.getSeats(), stores.getStorePostCode(), stores.getStoreAddress(), stores.getStorePhoneNumber(), stores.getOpenHour(), stores.getCloseHour(), stores.getCloseDay());
         
         model.addAttribute("imageName", imageName);
@@ -103,4 +103,14 @@ public class AdminStoresController {
         
         return "redirect:/admin/stores";
     }  
+    
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes) {        
+    	storesRepository.deleteById(id);
+                
+        redirectAttributes.addFlashAttribute("successMessage", "民宿を削除しました。");
+        
+        return "redirect:/admin/stores";
+    }    
+    
 }
