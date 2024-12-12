@@ -36,6 +36,21 @@
                                      </div>
                                  </div>
                                  
+                                 
+                                  <div class="form-group row mb-3">
+                                     <div class="col-md-5">
+                                         <label for="furigana" class="col-form-label text-md-left fw-bold">
+                                             <div class="d-flex align-items-center">
+                                                 <span class="me-1">フリガナ</span>
+                                                 <span class="badge bg-danger">必須</span>
+                                             </div>
+                                         </label>
+                                     </div>
+                                     <div class="col-md-7">                            
+                                         <div th:if="${#fields.hasErrors('furigana')}" class="text-danger small mb-2" th:errors="*{furigana}"></div>                                        
+                                         <input type="text" class="form-control" th:field="*{furigana}" placeholder="サムライ タロウ">
+                                     </div>
+                                 </div>
                                                                                        
                                  <div class="form-group row mb-3">
                                      <div class="col-md-5">

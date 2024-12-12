@@ -25,6 +25,9 @@ public class Users {
     
     @Column(name = "user_name")
     private String userName;
+    
+    @Column(name = "furigana")
+    private String furigana;  
         
     @Column(name = "mail_address")
     private String mailAddress;

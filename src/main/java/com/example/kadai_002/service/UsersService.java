@@ -29,6 +29,7 @@ public class UsersService {
         Role role = roleRepository.findByName("ROLE_GENERAL");
         
         users.setUserName(signupForm.getName());
+        users.setFurigana(signupForm.getFurigana());
         users.setUserPostCode(signupForm.getPostalCode());
         users.setUserAddress(signupForm.getAddress());
         users.setUserPhoneNumber(signupForm.getPhoneNumber());
@@ -46,6 +47,7 @@ public class UsersService {
         Users users = usersRepository.getReferenceById(userEditForm.getId());
         
         users.setUserName(userEditForm.getName());
+        users.setFurigana(userEditForm.getFurigana());
         users.setUserPostCode(userEditForm.getPostalCode());
         users.setUserAddress(userEditForm.getAddress());
         users.setUserPhoneNumber(userEditForm.getPhoneNumber());

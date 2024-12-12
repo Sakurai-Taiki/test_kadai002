@@ -20,6 +20,12 @@ public class UsersDetailsImpl implements UserDetails {
         return users;
     }
     
+    
+    //ユーザー名の取得
+    public String getName() {
+        return users.getUserName(); // Usersエンティティの適切なフィールドを取得
+    }
+    
     // ハッシュ化済みのパスワードを返す
     @Override
     public String getPassword() {
@@ -37,6 +43,9 @@ public class UsersDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
+    
+
+    
     
     // アカウントが期限切れでなければtrueを返す
     @Override

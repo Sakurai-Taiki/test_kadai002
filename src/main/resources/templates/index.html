@@ -22,6 +22,72 @@
                          ログアウトしました。
                      </div>
                      
+                     
+                      <div class="d-flex justify-content-center">                                            
+                         <form method="get" th:action="@{/houses}" class="mb-5 nagoyameshi-search-form">
+                             <div class="input-group">
+                                 <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="店舗名・目的地">
+                                 <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> 
+                             </div>               
+                         </form>                        
+                     </div>                                                                                                  
+                                                      
+                     <h2 class="text-center mb-3">新着</h2>
+                     
+                     
+                     
+                     
+                     
+                     <div class="row row-cols-lg-5 row-cols-2 g-3 mb-5">                                        
+                         <div class="col" th:each="newHouse : ${newHouses}">
+                             <a th:href="@{/houses/__${newHouse.getId()}__}" class="link-dark nagoyameshi-card-link">
+                                 <div class="card h-100">                                                                        
+                                     <img th:if="${newHouse.getPhotoName()}" th:src="@{/storage/__${newHouse.getPhotoName()}__}" class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">                                     
+                                     <img th:unless="${newHouse.getPhotoName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">                                                                                                                        
+                                     <div class="card-body">                                    
+                                         <h3 class="card-title" th:text="${newHouse.getStoreName()}"></h3>
+                                         <p class="card-text mb-1">
+                                             <small class="text-muted" th:text="${newHouse.getStoreAddress()}"></small>                                            
+                                         </p>
+                                         <p class="card-text">
+                                             <span th:text="${#numbers.formatInteger(newHouse.getMinBudget(), 1, 'COMMA') + '円 ～'}"></span>
+                                             <span th:text="${#numbers.formatInteger(newHouse.getMaxBudget(), 1, 'COMMA') + '円'}"></span>                                            
+                                         </p>                                    
+                                     </div>
+                                 </div>    
+                             </a>            
+                         </div>                                               
+                     </div>
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     <div class="row justify-content-center">
+                         <div class="col-xl-5 col-lg-6 col-md-8">                    
+                     
+                             <h2 class="text-center mb-3">カテゴリから探す</h2>                                        
+                              
+                             <table class="table">
+                                 <tbody>                                                     
+                                     <tr>
+                                         <th>創作料理</th>
+                                         <td>
+                                             <a th:href="@{/houses?area=北海道}">創作料理</a>
+                                         </td>                                     
+                                     </tr>  
+                                                                                                                                                                                                                                                                                                                                                                                                              
+                                 </tbody>
+                             </table>  
+                         </div>
+                     </div> 
+                     
+                     
+                     
+                     
+                     
                     
                  </div>
              </main>

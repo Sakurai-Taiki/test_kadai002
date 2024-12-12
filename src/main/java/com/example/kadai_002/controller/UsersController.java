@@ -26,7 +26,7 @@ public class UsersController {
     
 	 public UsersController(UsersRepository usersRepository, UsersService usersService) {
 	        this.usersRepository = usersRepository; 
-	         this.usersService = usersService;     
+	        this.usersService = usersService;     
     }    
     
     @GetMapping
@@ -41,12 +41,13 @@ public class UsersController {
     @GetMapping("/edit")
     public String edit(@AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl, Model model) {        
         Users users = usersRepository.getReferenceById(usersDetailsImpl.getUser().getId());  
-        UserEditForm userEditForm = new UserEditForm(users.getId(), users.getUserName(), users.getUserPostCode(), users.getUserAddress(), users.getUserPhoneNumber(), users.getMailAddress());
+        UserEditForm userEditForm = new UserEditForm(users.getId(), users.getUserName(), users.getFurigana(),users.getUserPostCode(), users.getUserAddress(), users.getUserPhoneNumber(), users.getMailAddress());
         
         model.addAttribute("userEditForm", userEditForm);
         
         return "users/edit";
     }    
+    
     @PostMapping("/update")
     public String update(@ModelAttribute @Validated UserEditForm userEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         // メールアドレスが変更されており、かつ登録済みであれば、BindingResultオブジェクトにエラー内容を追加する
@@ -56,12 +57,12 @@ public class UsersController {
         }
         
         if (bindingResult.hasErrors()) {
-            return "user/edit";
+            return "users/edit";
         }
         
         usersService.update(userEditForm);
         redirectAttributes.addFlashAttribute("successMessage", "会員情報を編集しました。");
         
-        return "redirect:/user";
+        return "redirect:/users";
     }    
 }
