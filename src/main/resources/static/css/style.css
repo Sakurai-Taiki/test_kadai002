@@ -53,6 +53,7 @@ footer {
 .nagoyameshi-btn {
 	background-color: #5196a6 !important;
 	transition: 0.1s;
+	margin: 4px;
 }
 
 .nagoyameshi-btn:hover {

@@ -28,9 +28,9 @@ public class VerificationToken {
 	     @Column(name = "token")
 	     private String token;
 	     
-	     @Column(name = "created_at", insertable = false, updatable = false)
-	     private Timestamp createdAt;
-	     
-	     @Column(name = "updated_at", insertable = false, updatable = false)
-	     private Timestamp updatedAt;        
+	     @Column(name = "create_date", insertable = false, updatable = false)
+	     private Timestamp createdDate;
+
+	     @Column(name = "update_date", insertable = false, updatable = false)
+	     private Timestamp updatedDate; 
 	}

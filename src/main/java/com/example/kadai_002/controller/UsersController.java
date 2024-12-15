@@ -51,7 +51,7 @@ public class UsersController {
     @PostMapping("/update")
     public String update(@ModelAttribute @Validated UserEditForm userEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         // メールアドレスが変更されており、かつ登録済みであれば、BindingResultオブジェクトにエラー内容を追加する
-        if (usersService.isEmailChanged(userEditForm) && usersService.isEmailRegistered(userEditForm.getEmail())) {
+        if (usersService.isEmailChanged(userEditForm) && usersService.isEmailRegistered(userEditForm.getMailAddress())) {
             FieldError fieldError = new FieldError(bindingResult.getObjectName(), "email", "すでに登録済みのメールアドレスです。");
             bindingResult.addError(fieldError);                       
         }

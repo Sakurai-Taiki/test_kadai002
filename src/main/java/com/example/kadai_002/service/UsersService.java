@@ -46,12 +46,12 @@ public class UsersService {
     public void update(UserEditForm userEditForm) {
         Users users = usersRepository.getReferenceById(userEditForm.getId());
         
-        users.setUserName(userEditForm.getName());
+        users.setUserName(userEditForm.getUserName());
         users.setFurigana(userEditForm.getFurigana());
-        users.setUserPostCode(userEditForm.getPostalCode());
-        users.setUserAddress(userEditForm.getAddress());
-        users.setUserPhoneNumber(userEditForm.getPhoneNumber());
-        users.setMailAddress(userEditForm.getEmail());      
+        users.setUserPostCode(userEditForm.getUserPostCode());
+        users.setUserAddress(userEditForm.getUserAddress());
+        users.setUserPhoneNumber(userEditForm.getUserPhoneNumber());
+        users.setMailAddress(userEditForm.getMailAddress());      
         
         usersRepository.save(users);
     }   
@@ -77,6 +77,6 @@ public class UsersService {
     // メールアドレスが変更されたかどうかをチェックする
     public boolean isEmailChanged(UserEditForm userEditForm) {
         Users currentUser = usersRepository.getReferenceById(userEditForm.getId());
-        return !userEditForm.getEmail().equals(currentUser.getMailAddress());      
+        return !userEditForm.getMailAddress().equals(currentUser.getMailAddress());      
     }  
 }

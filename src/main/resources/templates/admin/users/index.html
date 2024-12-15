@@ -22,7 +22,7 @@
                              <div class="d-flex justify-content-between align-items-end">
                                  <form method="get" th:action="@{/admin/users}" class="mb-3">
                                      <div class="input-group">
-                                         <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="氏名・フリガナ">
+                                         <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="氏名・メールアドレス">
                                          <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> 
                                      </div>               
                                  </form>                                                                                                
@@ -38,6 +38,7 @@
                                          <th scope="col">ID</th>
                                          <th scope="col">氏名</th>
                                          <th scope="col">フリガナ</th>
+                                         <th scope="col">住所</th>
                                          <th scope="col">メールアドレス</th>                                        
                                          <th scope="col"></th>
                                      </tr>
@@ -48,6 +49,7 @@
                                          <td th:text="${users.getUserName()}"></td>
                                          <td th:text="${users.getFurigana()}"></td>
                                          <td th:text="${users.getUserAddress()}"></td>
+                                         <td th:text="${users.getMailAddress()}"></td>
                                          <td><a th:href="@{/admin/users/__${users.getId()}__}">詳細</a></td>                                                                                
                                      </tr>                                      
                                  </tbody>
