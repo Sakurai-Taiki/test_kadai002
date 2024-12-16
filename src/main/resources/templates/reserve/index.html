@@ -35,16 +35,15 @@
 							<thead>
 								<tr>
 									<th scope="col">店舗名</th>
-									<th scope="col">ご予約日時</th>
+									<th scope="col">ご予約日</th>
+									<th scope="col">ご予約時間</th>
 									<th scope="col">ご予約人数</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="reserve : ${reservePage}">
-									<td>
-										<a th:href="@{/stores/__${reserve.stores.id}__}"
-											th:text="${reserve.stores.name}"></a>
-									</td>
+									<td><a th:href="@{/stores/__${reserve.stores.id}__}" th:text="${reserve.stores.storeName}"></a></td>
+									<td th:text="${reserve.reserveDate}"></td>
 									<td th:text="${reserve.reserveDate}"></td>
 									<td th:text="${reserve.reserveCount + '名'}"></td>
 								</tr>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.kadai_002.entity.Stores;
+import com.example.kadai_002.form.ReserveInputForm;
 import com.example.kadai_002.repository.StoresRepository;
 
 @Controller
@@ -69,10 +70,14 @@ public class HouseController {
     
     @GetMapping("/{id}")
     public String show(@PathVariable(name = "id") Integer id, Model model) {
-    	Stores stores = storesRepository.getReferenceById(id);
-        
-        model.addAttribute("stores", stores);         
-        
+        Stores stores = storesRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("指定された店舗IDは存在しません: " + id));
+
+        model.addAttribute("stores", stores);
+        model.addAttribute("reserveInputForm", new ReserveInputForm());
+
         return "houses/show";
-    }    
+    }  
+   
+    
 }
