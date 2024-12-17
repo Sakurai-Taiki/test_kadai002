@@ -129,6 +129,14 @@ footer {
      max-width: 300px;
  }
 
+ .nagoyameshi-star {
+     color: #ffa500;
+ } 
+ 
+ .nagoyameshi-star:focus {
+     color: #ffa500;
+ }
+
 @media screen and (min-width: 1400px) {
 	.nagoyameshi-container {
 		max-width: 1200px;

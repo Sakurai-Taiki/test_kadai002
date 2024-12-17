@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.kadai_002.entity.Reserve;
@@ -88,17 +89,56 @@ public class ReserveController {
 	@GetMapping("/houses/{id}/reserve/confirm")
 	public String confirm(@PathVariable(name = "id") Integer id,
 	                      @ModelAttribute ReserveInputForm reserveInputForm,
+	                      @AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl,
 	                      Model model) {
-	    // データをセット
+
+	    // 店舗情報を取得
+	    Stores stores = storesRepository.findById(id)
+	        .orElseThrow(() -> new IllegalArgumentException("指定された店舗IDが存在しません: " + id));
+	    
+	    // 現在のログインユーザーを取得
+	    Users currentUser = usersDetailsImpl.getUser();
+
+	    // ReserveRegisterFormを正しくセット
 	    ReserveRegisterForm reserveRegisterForm = new ReserveRegisterForm();
-	    reserveRegisterForm.setHouseId(id);
-	    reserveRegisterForm.setFromCheckinDate(reserveInputForm.getFromCheckinDate());
-	    reserveRegisterForm.setFromCheckinTime(reserveInputForm.getFromCheckinTime());
+	    reserveRegisterForm.setHouseId(id); // houseIdをセット
+	    reserveRegisterForm.setUserId(currentUser.getId()); // userIdをセット
+	    reserveRegisterForm.setCheckinDate(reserveInputForm.getFromCheckinDate());
+	    reserveRegisterForm.setCheckinTime(reserveInputForm.getFromCheckinTime());
 	    reserveRegisterForm.setNumberOfPeople(reserveInputForm.getNumberOfPeople());
 
-	    // モデルに追加
-	    model.addAttribute("reserveRegisterForm", reserveRegisterForm);
+	    // Modelに追加
+	    model.addAttribute("house", stores); // houseデータ
+	    model.addAttribute("reserveRegisterForm", reserveRegisterForm); // フォームデータ
 
 	    return "reserve/confirm";
 	}
+	
+	
+	
+	@PostMapping("/houses/{id}/reserve/create")
+	public String create(@ModelAttribute ReserveRegisterForm reserveRegisterForm) {
+	    // デバッグログ
+	    System.out.println("Create - House ID: " + reserveRegisterForm.getHouseId());
+	    System.out.println("Create - User ID: " + reserveRegisterForm.getUserId());
+	    
+	    if (reserveRegisterForm.getHouseId() == null || reserveRegisterForm.getUserId() == null) {
+	        throw new IllegalArgumentException("House ID and User ID must not be null. Please check the form submission.");
+	    }
+
+	    reserveService.create(reserveRegisterForm);        
+	    return "redirect:/reserve?reserved";
+	}
+	
+	
+	@PostMapping("/reserve/{storesId}/delete")
+    public String delete(@PathVariable(name = "storesId") Integer id, RedirectAttributes redirectAttributes) {        
+    	storesRepository.deleteById(id);
+                
+        redirectAttributes.addFlashAttribute("successMessage", "店舗を削除しました。");
+        
+        return "redirect:/reserve";
+    }   
+    
+	
 }

@@ -33,14 +33,14 @@ public class Reserve {
     @JoinColumn(name = "store_id", nullable = false) // 外部キーとしてマッピング
     private Stores stores;
 
-    @Column(name = "reserve_date", nullable = false)
-    private LocalDate reserveDate;
+    @Column(name = "checkin_date", nullable = false)
+    private LocalDate checkinDate;
 
-    @Column(name = "reserve_time", nullable = false)
-    private LocalTime reserveTime;
+    @Column(name = "checkin_time", nullable = false)
+    private LocalTime checkinTime;
 
-    @Column(name = "reserve_count", nullable = false)
-    private Integer reserveCount;
+    @Column(name = "number_of_people", nullable = false)
+    private Integer numberOfPeople;
 
     @Column(name = "create_date", insertable = false, updatable = false)
     private Timestamp createdDate;

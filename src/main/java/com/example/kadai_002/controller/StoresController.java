@@ -28,4 +28,5 @@ public class StoresController {
         
         return "admin/stores/index";
     }  
+    
 }

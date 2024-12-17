@@ -81,6 +81,9 @@ public class StoresService {
         StoresRepository.save(stores);
     }    
     
+    
+    
+    
     // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {
         String[] fileNames = fileName.split("\\.");                

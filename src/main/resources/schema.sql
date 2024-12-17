@@ -65,9 +65,9 @@ CREATE TABLE IF NOT EXISTS reserve (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     store_id INT NOT NULL,
-    reserve_date DATE NOT NULL,
-    reserve_time TIME NOT NULL,
-    reserve_count INT NOT NULL,
+    checkin_date DATE NOT NULL,
+    checkin_time TIME NOT NULL,
+    number_of_people INT NOT NULL,
     create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 
 /* お気に入りテーブル */
-CREATE TABLE IF NOT EXISTS favorites (
+CREATE TABLE IF NOT EXISTS favorite (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     store_id INT NOT NULL,

@@ -1,13 +1,34 @@
 package com.example.kadai_002.form;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor  // デフォルトコンストラクタを追加
 public class ReserveRegisterForm {
-	   private Integer houseId;
-	    private String fromCheckinDate;
-	    private String fromCheckinTime;
-	    private Integer numberOfPeople;
+    @NotNull
+    private Integer houseId;
+
+    @NotNull
+    private Integer userId;
+
+    @NotNull
+    private String checkinDate;
+
+    @NotNull
+    private String checkinTime;
+
+    @NotNull
+    private Integer numberOfPeople;
+    
+
+    // コンストラクタを追加する場合
+    public ReserveRegisterForm(Integer houseId, Integer userId, String checkinDate, String checkinTime, Integer numberOfPeople) {
+        this.houseId = houseId;
+        this.userId = userId;
+        this.checkinDate = checkinDate;
+        this.checkinTime = checkinTime;
+        this.numberOfPeople = numberOfPeople;
+    }
 }

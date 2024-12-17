@@ -30,6 +30,9 @@
 						<div th:if="${param.reserved}" class="alert alert-info">
 							予約が完了しました。
 						</div>
+						<div th:if="${successMessage}" class="alert alert-info">
+                            <span th:text="${successMessage}"></span>
+                        </div>
 
 						<table class="table">
 							<thead>
@@ -38,14 +41,43 @@
 									<th scope="col">ご予約日</th>
 									<th scope="col">ご予約時間</th>
 									<th scope="col">ご予約人数</th>
+									<th scope="col"></th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="reserve : ${reservePage}">
-									<td><a th:href="@{/stores/__${reserve.stores.id}__}" th:text="${reserve.stores.storeName}"></a></td>
-									<td th:text="${reserve.reserveDate}"></td>
-									<td th:text="${reserve.reserveDate}"></td>
-									<td th:text="${reserve.reserveCount + '名'}"></td>
+									<td><a th:href="@{/stores/__${reserve.stores.id}__}"
+											th:text="${reserve.stores.storeName}"></a></td>
+									<td th:text="${reserve.checkinDate}"></td>
+									<td th:text="${reserve.checkinTime}"></td>
+									<td th:text="${reserve.numberOfPeople + '名'}"></td>
+								    <td>
+                                        <a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteReserveModal' + reserve.id}">削除</a>
+                                    </td>
+
+									<!-- 削除用モーダル -->
+									<div class="modal fade" th:id="${'deleteReserveModal' + reserve.id}" tabindex="-1"
+										th:aria-labelledby="${'deleteReserveModalLabel' + reserve.id}">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title"
+														th:id="${'deleteReserveModalLabel' + reserve.id}"
+														th:text="${reserve.stores.storeName + 'を削除してもよろしいですか？'}"></h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="閉じる"></button>
+												</div>
+												<div class="modal-footer">
+													<form method="post"
+														th:action="@{/reserve/{Id}/delete(Id=${reserve.id})}">
+														<button type="submit"
+															class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
 								</tr>
 							</tbody>
 						</table>
