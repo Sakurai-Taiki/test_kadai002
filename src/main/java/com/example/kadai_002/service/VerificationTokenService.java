@@ -30,5 +30,17 @@ private final VerificationTokenRepository verificationTokenRepository;
     // トークンの文字列で検索した結果を返す
     public VerificationToken getVerificationToken(String token) {
         return verificationTokenRepository.findByToken(token);
-    }    
+    } 
+    
+    
+  //トークンリセット
+  	@Transactional
+  	public void update(Users users, String token) {
+  		VerificationToken verificationToken = verificationTokenRepository.findByUsers(users);
+  		
+  		verificationToken.setUsers(users);
+  		verificationToken.setToken(token);
+  		
+  		verificationTokenRepository.save(verificationToken);
+  	}
 }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.kadai_002.entity.Role;
 import com.example.kadai_002.entity.Users;
+import com.example.kadai_002.form.PasswordResetForm;
 import com.example.kadai_002.form.SignupForm;
 import com.example.kadai_002.form.UserEditForm;
 import com.example.kadai_002.repository.RoleRepository;
@@ -79,4 +80,16 @@ public class UsersService {
         Users currentUser = usersRepository.getReferenceById(userEditForm.getId());
         return !userEditForm.getMailAddress().equals(currentUser.getMailAddress());      
     }  
+    
+    
+  //パスワードリセット機能
+  	@Transactional
+  	public void passwordUpdate(PasswordResetForm passwordResetForm) {
+  		Users users = usersRepository.findByMailAddress(passwordResetForm.getEmail());
+  		
+  		users.setUserPassword(passwordEncoder.encode(passwordResetForm.getPassword()));
+  		users.setEnabled(true);
+  		
+  		usersRepository.save(users);
+  	}
 }

@@ -23,5 +23,9 @@ INSERT IGNORE INTO users (id, user_name, furigana, mail_address, user_password, 
 INSERT IGNORE INTO users (id, user_name, furigana, mail_address, user_password, user_post_code, user_address, user_phone_number, roles_id, enabled) VALUES (6, '櫻井　チキン','サクライ　チキン', 'chikin.samurai@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', '123-4567', '新潟県柏崎市真田町本原90', '090-1234-5678', 1, 1);
 
 --reserveテーブル
-INSERT INTO reserve (user_id, store_id, checkin_date, checkin_time, number_of_people) VALUES (1, 1, '2024-11-20', '11:00:00', 5);
-INSERT INTO reserve (user_id, store_id, checkin_date, checkin_time, number_of_people) VALUES (2, 1, '2024-11-20', '17:00:00', 4);
+INSERT IGNORE INTO reserve (user_id, store_id, checkin_date, checkin_time, number_of_people) VALUES (1, 1, '2024-11-20', '11:00:00', 5);
+INSERT IGNORE INTO reserve (user_id, store_id, checkin_date, checkin_time, number_of_people) VALUES (2, 1, '2024-11-20', '17:00:00', 4);
+
+
+ -- reviewsテーブル
+INSERT IGNORE INTO reviews (score, content, user_id, store_id) VALUES (5, '素晴らしい滞在でした。また利用したいです。', 2, 2);

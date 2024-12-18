@@ -26,7 +26,7 @@ import com.example.kadai_002.security.UsersDetailsImpl;
 import com.example.kadai_002.service.ReviewService;
 
 @Controller
-@RequestMapping("/stores/{storesId}/reviews")
+@RequestMapping("/houses/{storesId}/reviews")
 public class ReviewController {
 
     private final ReviewRepository reviewRepository;
@@ -72,6 +72,11 @@ public class ReviewController {
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+        if (usersDetailsImpl == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "ログインが必要です。");
+            return "redirect:/login";
+        }
+
         Stores stores = storesRepository.findById(storesId)
                 .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
         Users users = usersDetailsImpl.getUser();
@@ -108,15 +113,20 @@ public class ReviewController {
     @PostMapping("/{reviewId}/update")
     public String update(@PathVariable(name = "storesId") Integer storesId,
                          @PathVariable(name = "reviewId") Integer reviewId,
+                         @AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl,
                          @ModelAttribute @Validated ReviewEditForm reviewEditForm,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes,
                          Model model) {
-        Stores stores = storesRepository.getReferenceById(storesId);
-        Review review = reviewRepository.getReferenceById(reviewId);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("レビューが見つかりません"));
+
+        if (!review.getUsers().getId().equals(usersDetailsImpl.getUser().getId())) {
+            throw new SecurityException("このレビューを編集する権限がありません。");
+        }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("stores", stores);
+            model.addAttribute("stores", storesRepository.getReferenceById(storesId));
             model.addAttribute("review", review);
             return "reviews/edit";
         }

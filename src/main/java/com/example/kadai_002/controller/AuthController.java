@@ -1,5 +1,7 @@
 package com.example.kadai_002.controller;
 
+
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,8 +15,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.kadai_002.entity.Users;
 import com.example.kadai_002.entity.VerificationToken;
+import com.example.kadai_002.event.ResetEventPublisher;
 import com.example.kadai_002.event.SignupEventPublisher;
+import com.example.kadai_002.form.PasswordResetForm;
 import com.example.kadai_002.form.SignupForm;
+import com.example.kadai_002.form.VerificationTokenEditForm;
+import com.example.kadai_002.repository.UsersRepository;
+import com.example.kadai_002.repository.VerificationTokenRepository;
 import com.example.kadai_002.service.UsersService;
 import com.example.kadai_002.service.VerificationTokenService;
 
@@ -24,14 +31,20 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class AuthController {
 	
+	 private final UsersRepository usersRepository;
+	 private final VerificationTokenRepository verificationTokenRepository;
 	 private final UsersService usersService; 
-	 private final SignupEventPublisher signupEventPublisher;
 	 private final VerificationTokenService verificationTokenService;
+	 private final SignupEventPublisher signupEventPublisher;
+	 private final ResetEventPublisher resetEventPublisher;
     
-	 public AuthController(UsersService usersService, SignupEventPublisher signupEventPublisher, VerificationTokenService verificationTokenService) { 
-	         this.usersService = usersService; 
-	         this.signupEventPublisher = signupEventPublisher;
-	         this.verificationTokenService = verificationTokenService;
+	 public AuthController(UsersRepository usersRepository, VerificationTokenRepository verificationTokenRepository, UsersService usersService, VerificationTokenService verificationTokenService, SignupEventPublisher signupEventPublisher, ResetEventPublisher resetEventPublisher) {
+		    this.usersRepository = usersRepository;
+			this.verificationTokenRepository = verificationTokenRepository;
+			this.usersService = usersService;
+			this.verificationTokenService = verificationTokenService;
+			this.signupEventPublisher = signupEventPublisher;
+			this.resetEventPublisher = resetEventPublisher;
 	    }   
 	
     @GetMapping("/login")
@@ -86,4 +99,51 @@ public class AuthController {
         
         return "auth/verify";         
     }    
+    
+    
+  //トークン再発行画面
+  	@GetMapping("/reset")
+  	public String reset(Model model) {
+  		model.addAttribute("verificationTokenEditForm", new VerificationTokenEditForm());
+  		
+  		return "auth/tokenReset";
+  	}
+  	
+  	@GetMapping("/reset/token/verify")
+  	public String resetVerify(@RequestParam("token") String token, Model model) {
+  	    VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
+  	    if (verificationToken == null || verificationToken.getUsers() == null) {
+  	        model.addAttribute("errorMessage", "無効なトークンです。");
+  	        return "auth/tokenReset";
+  	    }
+  	    Users user = verificationToken.getUsers();
+  	    PasswordResetForm passwordResetForm = new PasswordResetForm(user.getId(), user.getMailAddress(), null);
+  	    
+  	    usersService.enableUser(user);
+
+  	    model.addAttribute("users", user);
+  	    model.addAttribute("passwordResetForm", passwordResetForm);
+
+  	    return "auth/passwordReset";
+  	}
+    
+  //トークン再発行処理
+  	@PostMapping("/reset/token")
+  	public String resetToken(@ModelAttribute @Validated VerificationTokenEditForm verificationTokenEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
+  		Users updatedUser = usersRepository.findByMailAddress(verificationTokenEditForm.getEmail());
+  		String requestUrl = new String(httpServletRequest.getRequestURL());
+  		resetEventPublisher.publishResetEvent(updatedUser, requestUrl);
+  		redirectAttributes.addFlashAttribute("resetTokenSuccessMessage", "ご入力いただいたメールアドレスに認証メールを送信しました。");
+  		
+  		return "redirect:/";
+  	}
+  	
+	//パスワードリセット処理
+  	@PostMapping("/reset/token/verify")
+	public String resetPassword(@ModelAttribute @Validated PasswordResetForm passwordResetForm, RedirectAttributes redirectAttributes) {
+		usersService.passwordUpdate(passwordResetForm);
+		redirectAttributes.addFlashAttribute("resetPasswordSuccessMessage", "パスワードを変更しました。");
+		
+		return "redirect:/";
+	}
 }

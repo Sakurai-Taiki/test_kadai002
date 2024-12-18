@@ -74,20 +74,20 @@ public class HouseController {
 
     @GetMapping("/{id}")
     public String show(@PathVariable(name = "id") Integer id, Model model, @AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl) {
-        Stores store = storesRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("指定された店舗IDは存在しません: " + id));
+        Stores stores = storesRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("指定された店舗IDは存在しません: " + id));
 
         boolean hasUserAlreadyReviewed = false;
         Users user = null;
 
         if (usersDetailsImpl != null) {
             user = usersDetailsImpl.getUser();
-            hasUserAlreadyReviewed = reviewService.hasUserAlreadyReviewed(store, user);
+            hasUserAlreadyReviewed = reviewService.hasUserAlreadyReviewed(stores, user);
         }
 
-        List<Review> newReviews = reviewRepository.findTop6ByStoresOrderByCreatedDateDesc(store);
-        long totalReviewCount = reviewRepository.countByStores(store);
+        List<Review> newReviews = reviewRepository.findTop6ByStoresOrderByCreatedDateDesc(stores);
+        long totalReviewCount = reviewRepository.countByStores(stores);
 
-        model.addAttribute("stores", store);
+        model.addAttribute("stores", stores);
         model.addAttribute("reserveInputForm", new ReserveInputForm());
         model.addAttribute("hasUserAlreadyReviewed", hasUserAlreadyReviewed);
         model.addAttribute("newReviews", newReviews);

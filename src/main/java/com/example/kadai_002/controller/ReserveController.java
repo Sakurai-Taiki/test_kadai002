@@ -133,7 +133,7 @@ public class ReserveController {
 	
 	@PostMapping("/reserve/{storesId}/delete")
     public String delete(@PathVariable(name = "storesId") Integer id, RedirectAttributes redirectAttributes) {        
-    	storesRepository.deleteById(id);
+		reserveRepository.deleteById(id);
                 
         redirectAttributes.addFlashAttribute("successMessage", "店舗を削除しました。");
         

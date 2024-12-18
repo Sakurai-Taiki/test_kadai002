@@ -12,34 +12,39 @@ import com.example.kadai_002.repository.ReviewRepository;
 
 @Service
 public class ReviewService {
-    private final ReviewRepository reviewRepository;        
-    
-    public ReviewService(ReviewRepository reviewRepository) {        
-        this.reviewRepository = reviewRepository;        
-    }     
-    
+    private final ReviewRepository reviewRepository;
+
+    public ReviewService(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
+
     @Transactional
     public void create(Stores stores, Users users, ReviewRegisterForm reviewRegisterForm) {
-        Review review = new Review();        
-        
-        review.setStores(stores);                
+        // 重複チェック
+        if (hasUserAlreadyReviewed(stores, users)) {
+            throw new IllegalArgumentException("この店舗には既にレビューを投稿しています。");
+        }
+
+        // 新規レビューを作成
+        Review review = new Review();
+        review.setStores(stores);
         review.setUsers(users);
         review.setScore(reviewRegisterForm.getScore());
         review.setContent(reviewRegisterForm.getContent());
-                    
+
         reviewRepository.save(review);
-    }     
-    
+    }
+
     @Transactional
     public void update(ReviewEditForm reviewEditForm) {
-        Review review = reviewRepository.getReferenceById(reviewEditForm.getId());        
-        
-        review.setScore(reviewEditForm.getScore());                
+        Review review = reviewRepository.getReferenceById(reviewEditForm.getId());
+
+        review.setScore(reviewEditForm.getScore());
         review.setContent(reviewEditForm.getContent());
-                    
+
         reviewRepository.save(review);
-    }    
-    
+    }
+
     public boolean hasUserAlreadyReviewed(Stores stores, Users users) {
         return reviewRepository.findByStoresAndUsers(stores, users) != null;
     }
