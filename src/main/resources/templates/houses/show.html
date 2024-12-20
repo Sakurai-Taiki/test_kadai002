@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 	<title>店舗詳細</title>
+	
 </head>
 
 <body>
@@ -36,6 +37,10 @@
 						<div th:if="${errorMessage}" class="alert alert-danger">
 							<span th:text="${errorMessage}"></span>
 						</div>
+
+<!-- 現在の権限確認 -->
+<p>現在のユーザーの権限: <span th:text="${#authentication.authorities}"></span></p>
+
 
 						<div class="mb-4">
 							<img th:if="${stores.getPhotoName() != null}"
@@ -137,39 +142,39 @@
 									</div>
 								</div>
 
-								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
-									<div class="card">
-										<div class="card-body">
+								<!-- 有料会員部分 -->
+								<div sec:authorize="hasRole('ROLE_PRIME')">
+									<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+										<div class="card">
+											<div class="card-body">
+
+												<!-- 予約フォーム部分 -->
+												<form method="get" th:action="@{/houses/__${stores.id}__/reserve/input}"
+													th:object="${reserveInputForm}">
+													<div class="form-group mb-2">
+														<label for="fromCheckinDate" class="fw-bold">ご予約日</label>
+														<input type="text" class="form-control"
+															th:field="*{fromCheckinDate}" />
+													</div>
+													<div class="form-group mb-2">
+														<label for="fromCheckinTime" class="fw-bold">ご予約時間</label>
+														<input type="text" class="form-control"
+															th:field="*{fromCheckinTime}" />
+													</div>
+													<div class="form-group mb-4">
+														<label for="numberOfPeople" class="fw-bold">ご予約人数</label>
+														<input type="number" class="form-control"
+															th:field="*{numberOfPeople}" min="1" />
+													</div>
+													<button type="submit" class="btn btn-primary w-100">予約する</button>
+												</form>
 
 
-
-											<!-- フォーム部分 -->
-											<form method="get" th:action="@{/houses/__${stores.id}__/reserve/input}"
-												th:object="${reserveInputForm}">
-												<div class="form-group mb-2">
-													<label for="fromCheckinDate" class="fw-bold">ご予約日</label>
-													<input type="text" class="form-control"
-														th:field="*{fromCheckinDate}" />
+												<div th:if="${stores == null}" class="alert alert-danger">
+													<p>指定された店舗情報は存在しません。</p>
 												</div>
-												<div class="form-group mb-2">
-													<label for="fromCheckinTime" class="fw-bold">ご予約時間</label>
-													<input type="text" class="form-control"
-														th:field="*{fromCheckinTime}" />
-												</div>
-												<div class="form-group mb-4">
-													<label for="numberOfPeople" class="fw-bold">ご予約人数</label>
-													<input type="number" class="form-control"
-														th:field="*{numberOfPeople}" min="1" />
-												</div>
-												<button type="submit" class="btn btn-primary w-100">予約する</button>
-											</form>
 
-											<div th:if="${stores == null}" class="alert alert-danger">
-												<p>指定された店舗情報は存在しません。</p>
 											</div>
-
-
-											</form>
 										</div>
 									</div>
 								</div>
@@ -177,86 +182,87 @@
 						</div>
 
 						<!-- レビューセクション -->
-						<div class="container px-0">
-							<h2 class="mb-4 text-center">レビュー</h2>
+						<div sec:authorize="hasRole('ROLE_GENERAL')">
+							<div class="container px-0">
+								<h2 class="mb-4 text-center">レビュー</h2>
 
-							<div sec:authorize="hasAuthority('ROLE_PRIME')" th:unless="${hasUserAlreadyReviewed}"
-								class="row justify-content-center mb-4">
-								<div class="col-lg-4">
-									<a th:href="@{/houses/__${stores.id}__/reviews/register}"
-										class="btn text-white shadow-sm w-100 nagoyameshi-btn">
-										レビューを投稿する
-									</a>
+								<div th:unless="${hasUserAlreadyReviewed}" class="row justify-content-center mb-4">
+									<div class="col-lg-4">
+										<a th:href="@{/houses/__${stores.id}__/prime/reviews/register}"
+											class="btn text-white shadow-sm w-100 nagoyameshi-btn">
+											レビューを投稿する
+										</a>
+									</div>
 								</div>
-							</div>
-							<div th:if="${#lists.isEmpty(newreview)}" class="mb-4">
-								<p class="text-center">まだレビューがありません。</p>
-							</div>
-							<div th:unless="${#lists.isEmpty(newreview)}" class="row row-cols-1 row-cols-md-2 g-4 mb-4">
-								<div th:each="review : ${newreview}">
-									<div class="col">
-										<div class="card">
-											<div class="card-body">
-												<div class="d-flex justify-content-between">
-
-
-													<h5 class="card-title" th:text="${review.getUsers().getUserName()}">
-													</h5>
-
-
-													<span sec:authorize="isAuthenticated()"
-														th:if="${#authentication.principal.user.id == review.getUser().getId()}">
-														<a th:href="@{/houses/__${stores.getId()}__/review/__${review.getId()}__/edit}"
-															class="me-2">編集</a>
-														<a href="#" class="nagoyameshi-link-danger"
-															data-bs-toggle="modal"
-															th:data-bs-target="${'#deleteReviewModal' + review.getId()}">削除</a>
-														<!-- 削除用モーダル -->
-														<div class="modal fade"
-															th:id="${'deleteReviewModal' + review.getId()}"
-															tabindex="-1"
-															th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
-															<div class="modal-dialog">
-																<div class="modal-content">
-																	<div class="modal-header">
-																		<h5 class="modal-title"
-																			th:id="${'deleteReviewModalLabel' + review.getId()}"
-																			th:text="${house.getName() + 'のレビューを削除してもよろしいですか？'}">
-																		</h5>
-																		<button type="button" class="btn-close"
-																			data-bs-dismiss="modal"
-																			aria-label="閉じる"></button>
-																	</div>
-																	<div class="modal-footer">
-																		<form method="post"
-																			th:action="@{/houses/__${stores.getId()}__/review/__${review.getId()}__/delete}">
-																			<button type="submit"
-																				class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
-																		</form>
-																	</div>
+								<div th:if="${#lists.isEmpty(newreview)}" class="mb-4">
+									<p class="text-center">まだレビューがありません。</p>
+								</div>
+								<div th:unless="${#lists.isEmpty(newreview)}"
+									class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+									<div th:each="review : ${newreview}">
+										<div class="col card card-body">
+											<div class="d-flex justify-content-between">
+												<h5 class="card-title" th:text="${review.getUsers().getUserName()}">
+												</h5>
+												<span sec:authorize="isAuthenticated()"
+													th:if="${#authentication.principal.user.id == review.getUser().getId()}">
+													<a th:href="@{/houses/__${stores.getId()}__/review/__${review.getId()}__/edit}"
+														class="me-2">編集</a>
+													<a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal"
+														th:data-bs-target="${'#deleteReviewModal' + review.getId()}">削除</a>
+													<!-- 削除用モーダル -->
+													<div class="modal fade"
+														th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1"
+														th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
+														<div class="modal-dialog">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h5 class="modal-title"
+																		th:id="${'deleteReviewModalLabel' + review.getId()}"
+																		th:text="${house.getName() + 'のレビューを削除してもよろしいですか？'}">
+																	</h5>
+																	<button type="button" class="btn-close"
+																		data-bs-dismiss="modal"
+																		aria-label="閉じる"></button>
+																</div>
+																<div class="modal-footer">
+																	<form method="post"
+																		th:action="@{/houses/__${stores.getId()}__/review/__${review.getId()}__/delete}">
+																		<button type="submit"
+																			class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+																	</form>
 																</div>
 															</div>
 														</div>
-													</span>
-												</div>
-												<p class="card-text mb-1">
-													<span class="nagoyameshi-star"
-														th:each="star : ${#numbers.sequence(1, 5)}"
-														th:text="${star <= review.getScore()} ? '&#9733;' : '&#9734;'"></span>
-												</p>
-												<p class="card-text"><small class="text-muted"
-														th:text="${#dates.format(review.getCreatedDate(), 'yyyy年MM月dd日')}"></small>
-												</p>
-												<p class="card-text" th:text="${review.getContent()}"></p>
+													</div>
+												</span>
 											</div>
+											<p class="card-text mb-1">
+												<span class="nagoyameshi-star"
+													th:each="star : ${#numbers.sequence(1, 5)}"
+													th:text="${star <= review.getScore()} ? '&#9733;' : '&#9734;'"></span>
+											</p>
+											<p class="card-text"><small class="text-muted"
+													th:text="${#dates.format(review.getCreatedDate(), 'yyyy年MM月dd日')}"></small>
+											</p>
+											<p class="card-text" th:text="${review.getContent()}"></p>
+
+
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="text-center mb-4" th:if="${totalReviewCount > 6}">
-								<a th:href="@{/houses/__${stores.getId()}__/review}">すべてのレビューを見る</a>
+								<div class="text-center mb-4" th:if="${totalReviewCount > 6}">
+									<a th:href="@{/houses/__${stores.getId()}__/review}">すべてのレビューを見る</a>
+								</div>
 							</div>
 						</div>
+
+
+
+
+
+
+
 					</div>
 				</div>
 			</div>

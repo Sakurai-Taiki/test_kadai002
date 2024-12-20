@@ -50,18 +50,18 @@ public class ReviewController {
         model.addAttribute("stores", stores);
         model.addAttribute("reviewPage", reviewPage);
 
-        return "reviews/index";
+        return "prime/reviews/index";
     }
 
     // レビュー登録ページ
-    @GetMapping("/register")
+    @GetMapping("/prime/reviews/register")
     public String register(@PathVariable(name = "storesId") Integer storesId, Model model) {
         Stores stores = storesRepository.getReferenceById(storesId);
 
         model.addAttribute("stores", stores);
         model.addAttribute("reviewRegisterForm", new ReviewRegisterForm());
 
-        return "reviews/register";
+        return "prime/reviews/register";
     }
 
     // レビュー登録処理
@@ -119,7 +119,7 @@ public class ReviewController {
         model.addAttribute("review", review);
         model.addAttribute("reviewEditForm", reviewEditForm);
 
-        return "reviews/edit";
+        return "prime/reviews/edit";
     }
 
     // レビュー更新処理
@@ -141,7 +141,7 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("stores", storesRepository.getReferenceById(storesId));
             model.addAttribute("review", review);
-            return "reviews/edit";
+            return "prime/reviews/edit";
         }
 
         reviewService.update(reviewEditForm);
