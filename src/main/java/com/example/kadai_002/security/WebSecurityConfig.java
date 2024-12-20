@@ -14,30 +14,39 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-				.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/css/**", "/images/**", "/js/**", "/storage/**", "/", "/signup/**", "/houses", "/houses/{id}", "/stripe/webhook", "/houses/{id}/reviews").permitAll()  // すべてのユーザーにアクセスを許可するURL   
-			             .requestMatchers("/admin/**").hasRole("ADMIN")  // 管理者にのみアクセスを許可するURL
-			             .anyRequest().authenticated()                   // 上記以外のURLはログインが必要（会員または管理者のどちらでもOK）
-			            )
-				.formLogin((form) -> form
-						.loginPage("/login") // ログインページのURL
-						.loginProcessingUrl("/login") // ログインフォームの送信先URL
-						.defaultSuccessUrl("/?loggedIn") // ログイン成功時のリダイレクト先URL
-						.failureUrl("/login?error") // ログイン失敗時のリダイレクト先URL
-						.permitAll())
-				.logout((logout) -> logout
-						.logoutSuccessUrl("/?loggedOut") // ログアウト時のリダイレクト先URL
-						.permitAll());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests((requests) -> requests
+                // 静的リソースや一般公開ページは許可
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/storage/**", "/", "/signup/**", "/houses", "/houses/{id}", "/stripe/webhook", "/reset").permitAll()
+                
+                // レビュー投稿ページとその関連機能を ROLE_PRIME に限定
+                .requestMatchers("/houses/**/reviews/register", "/houses/**/reviews/create").hasAuthority("ROLE_PRIME")
 
-		return http.build();
-	}
+                // 管理者のみアクセス可能
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+                // その他のページは認証を要求
+                .anyRequest().authenticated()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login")               // ログインページ
+                .loginProcessingUrl("/login")      // ログインフォームの送信先
+                .defaultSuccessUrl("/?loggedIn")   // ログイン成功時のリダイレクト先
+                .failureUrl("/login?error")        // ログイン失敗時のリダイレクト先
+                .permitAll()
+            )
+            .logout((logout) -> logout
+                .logoutSuccessUrl("/?loggedOut")   // ログアウト時のリダイレクト先
+                .permitAll()
+            );
 
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

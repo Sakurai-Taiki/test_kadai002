@@ -20,6 +20,11 @@ public class ReviewService {
 
     @Transactional
     public void create(Stores stores, Users users, ReviewRegisterForm reviewRegisterForm) {
+        // 権限チェック
+    	if (users.getRole() == null || !users.getRole().getName().equals("ROLE_PRIME")) {
+    	    throw new SecurityException("レビューを投稿する権限がありません。");
+        }
+
         // 重複チェック
         if (hasUserAlreadyReviewed(stores, users)) {
             throw new IllegalArgumentException("この店舗には既にレビューを投稿しています。");
@@ -34,7 +39,6 @@ public class ReviewService {
 
         reviewRepository.save(review);
     }
-
     @Transactional
     public void update(ReviewEditForm reviewEditForm) {
         Review review = reviewRepository.getReferenceById(reviewEditForm.getId());

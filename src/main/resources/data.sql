@@ -28,4 +28,7 @@ INSERT IGNORE INTO reserve (user_id, store_id, checkin_date, checkin_time, numbe
 
 
  -- reviewsテーブル
+INSERT IGNORE INTO reviews (score, content, user_id, store_id) VALUES (5, '素晴らしい滞在でした。また利用したいです。', 2, 1);
+INSERT IGNORE INTO reviews (score, content, user_id, store_id) VALUES (5, '素晴らしい滞在でした。また利用したいです。', 2, 2);
+INSERT IGNORE INTO reviews (score, content, user_id, store_id) VALUES (5, '素晴らしい滞在でした。また利用したいです。', 2, 1);
 INSERT IGNORE INTO reviews (score, content, user_id, store_id) VALUES (5, '素晴らしい滞在でした。また利用したいです。', 2, 2);

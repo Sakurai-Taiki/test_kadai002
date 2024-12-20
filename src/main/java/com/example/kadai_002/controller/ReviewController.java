@@ -77,6 +77,14 @@ public class ReviewController {
             return "redirect:/login";
         }
 
+        // 権限チェック
+        if (!usersDetailsImpl.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_PRIME"))) {
+            redirectAttributes.addFlashAttribute("errorMessage", "レビューを投稿できる権限がありません。");
+            return "redirect:/houses/" + storesId;
+        }
+
+        // ストアとユーザーの情報を取得
         Stores stores = storesRepository.findById(storesId)
                 .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
         Users users = usersDetailsImpl.getUser();
@@ -86,10 +94,15 @@ public class ReviewController {
             return "reviews/register";
         }
 
-        reviewService.create(stores, users, reviewRegisterForm);
-        redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
+        try {
+            reviewService.create(stores, users, reviewRegisterForm);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/houses/" + storesId + "/reviews/register";
+        }
 
-        return "redirect:/stores/" + storesId + "/reviews";
+        redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
+        return "redirect:/houses/" + storesId + "/reviews";
     }
 
     // レビュー編集ページ

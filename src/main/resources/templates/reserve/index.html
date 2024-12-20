@@ -10,12 +10,12 @@
 </head>
 
 <body>
-	<div class="samuraitravel-wrapper">
+	<div class="nagoyameshi-wrapper">
 		<!-- ヘッダー -->
 		<div th:replace="~{fragment :: header}"></div>
 
 		<main>
-			<div class="container samuraitravel-container pb-5">
+			<div class="container nagoyameshi-container pb-5">
 				<div class="row justify-content-center">
 					<div class="col-xxl-9 col-xl-10 col-lg-11">
 						<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -90,20 +90,20 @@
 										<span th:if="${reservePage.first}" class="page-link disabled">前</span>
 										<a th:unless="${reservePage.first}"
 											th:href="@{/reserve(page=${reservePage.number - 1})}"
-											class="page-link samuraitravel-page-link">前</a>
+											class="page-link nagoyameshi-page-link">前</a>
 									</li>
 									<li th:each="i : ${#numbers.sequence(0, reservePage.totalPages - 1)}"
 										class="page-item">
 										<span th:if="${i == reservePage.number}"
-											class="page-link active samuraitravel-active" th:text="${i + 1}"></span>
+											class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>
 										<a th:unless="${i == reservePage.number}" th:href="@{/reserve(page=${i})}"
-											class="page-link samuraitravel-page-link" th:text="${i + 1}"></a>
+											class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
 									</li>
 									<li class="page-item">
 										<span th:if="${reservePage.last}" class="page-link disabled">次</span>
 										<a th:unless="${reservePage.last}"
 											th:href="@{/reserve(page=${reservePage.number + 1})}"
-											class="page-link samuraitravel-page-link">次</a>
+											class="page-link nagoyameshi-page-link">次</a>
 									</li>
 								</ul>
 							</nav>
