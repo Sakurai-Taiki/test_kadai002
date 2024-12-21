@@ -26,7 +26,7 @@ import com.example.kadai_002.security.UsersDetailsImpl;
 import com.example.kadai_002.service.ReviewService;
 
 @Controller
-@RequestMapping("/houses/{storesId}/reviews")
+@RequestMapping("houses/{storesId}/prime/reviews")
 public class ReviewController {
 
     private final ReviewRepository reviewRepository;
@@ -54,9 +54,10 @@ public class ReviewController {
     }
 
     // レビュー登録ページ
-    @GetMapping("/prime/reviews/register")
+    @GetMapping("/register")
     public String register(@PathVariable(name = "storesId") Integer storesId, Model model) {
-        Stores stores = storesRepository.getReferenceById(storesId);
+        Stores stores = storesRepository.findById(storesId)
+            .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
 
         model.addAttribute("stores", stores);
         model.addAttribute("reviewRegisterForm", new ReviewRegisterForm());
@@ -72,37 +73,27 @@ public class ReviewController {
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes,
                          Model model) {
-        if (usersDetailsImpl == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "ログインが必要です。");
-            return "redirect:/login";
-        }
-
-        // 権限チェック
-        if (!usersDetailsImpl.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_PRIME"))) {
-            redirectAttributes.addFlashAttribute("errorMessage", "レビューを投稿できる権限がありません。");
-            return "redirect:/houses/" + storesId;
-        }
-
-        // ストアとユーザーの情報を取得
-        Stores stores = storesRepository.findById(storesId)
-                .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
-        Users users = usersDetailsImpl.getUser();
-
         if (bindingResult.hasErrors()) {
-            model.addAttribute("stores", stores);
-            return "reviews/register";
+            model.addAttribute("stores", storesRepository.getReferenceById(storesId));
+            model.addAttribute("errorMessage", "入力内容にエラーがあります。");
+            return "prime/reviews/register";
         }
 
+        Stores stores = storesRepository.findById(storesId)
+            .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
+
+        Users users = usersDetailsImpl.getUser();
         try {
             reviewService.create(stores, users, reviewRegisterForm);
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/houses/" + storesId + "/reviews/register";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("stores", stores);
+            model.addAttribute("reviewRegisterForm", reviewRegisterForm);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "prime/reviews/register";
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
-        return "redirect:/houses/" + storesId + "/reviews";
+        return "redirect:/houses/" + storesId + "/prime/reviews";
     }
 
     // レビュー編集ページ
@@ -135,7 +126,8 @@ public class ReviewController {
                 .orElseThrow(() -> new IllegalArgumentException("レビューが見つかりません"));
 
         if (!review.getUsers().getId().equals(usersDetailsImpl.getUser().getId())) {
-            throw new SecurityException("このレビューを編集する権限がありません。");
+            redirectAttributes.addFlashAttribute("errorMessage", "このレビューを編集する権限がありません。");
+            return "redirect:/houses/" + storesId + "/prime/reviews";
         }
 
         if (bindingResult.hasErrors()) {
@@ -147,7 +139,7 @@ public class ReviewController {
         reviewService.update(reviewEditForm);
         redirectAttributes.addFlashAttribute("successMessage", "レビューを編集しました。");
 
-        return "redirect:/stores/" + storesId + "/reviews";
+        return "redirect:/houses/" + storesId + "/prime/reviews";
     }
 
     // レビュー削除処理
@@ -159,6 +151,6 @@ public class ReviewController {
 
         redirectAttributes.addFlashAttribute("successMessage", "レビューを削除しました。");
 
-        return "redirect:/stores/" + storesId + "/reviews";
+        return "redirect:/houses/" + storesId + "/prime/reviews";
     }
 }

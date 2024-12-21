@@ -41,6 +41,7 @@ public class UsersDetailsImpl implements UserDetails {
     // ロールのコレクションを返す
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+    	 System.out.println("ユーザー権限: " + authorities);
         return authorities;
     }
     
@@ -70,4 +71,5 @@ public class UsersDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return users.getEnabled();
     }
+    
 }

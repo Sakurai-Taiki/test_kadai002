@@ -18,7 +18,7 @@
 					<div class="col-xl-4 col-lg-5 col-md-7 col-sm-9">
 						<h1 class="mb-4 text-center">予約内容確認</h1>
 
-						<form method="post" th:action="@{/houses/__${reserveRegisterForm.houseId}__/reserve/create}" 
+						<form method="post" th:action="@{/houses/{id}/prime/reserve/create(id=${reserveRegisterForm.houseId})}" 
       th:object="${reserveRegisterForm}">
 
     <!-- houseIdをhiddenフィールドで送信 -->

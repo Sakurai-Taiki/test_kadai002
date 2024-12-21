@@ -19,10 +19,10 @@ public class WebSecurityConfig {
         http
         .authorizeHttpRequests((requests) -> requests
                 // 静的リソースや一般公開ページは許可
-                .requestMatchers("/css/**", "/images/**", "/js/**", "/storage/**", "/", "/signup/**", "/houses", "/houses/{id}", "/stripe/webhook", "/reset").permitAll()
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/storage/**", "/", "/signup/**", "/houses", "/houses/{id}", "/houses/**","/stripe/webhook", "/reset").permitAll()
                 
                 // レビュー投稿ページとその関連機能を ROLE_PRIME に限定
-                .requestMatchers("/prime/**").hasRole("PRIME")
+                .requestMatchers("/houses/{storesId}/prime/reviews/**").hasRole("PRIME")
 
                 // 管理者のみアクセス可能
                 .requestMatchers("/admin/**").hasRole("ADMIN")

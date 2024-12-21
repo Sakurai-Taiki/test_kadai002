@@ -143,13 +143,13 @@
 								</div>
 
 								<!-- 有料会員部分 -->
-								<div sec:authorize="hasRole('ROLE_PRIME')">
-									<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+								<div sec:authorize="hasRole('ROLE_PRIME')" class="col-lg-4 px-0 ps-lg-4 mb-4">
+									<div sec:authorize="isAuthenticated()">
 										<div class="card">
 											<div class="card-body">
 
 												<!-- 予約フォーム部分 -->
-												<form method="get" th:action="@{/houses/__${stores.id}__/reserve/input}"
+												<form method="get" th:action="@{/houses/__${stores.id}__/prime/reserve/input}"
 													th:object="${reserveInputForm}">
 													<div class="form-group mb-2">
 														<label for="fromCheckinDate" class="fw-bold">ご予約日</label>
@@ -182,11 +182,11 @@
 						</div>
 
 						<!-- レビューセクション -->
-						<div sec:authorize="hasRole('ROLE_GENERAL')">
+						<div sec:authorize="hasRole('ROLE_PRIME')">
 							<div class="container px-0">
 								<h2 class="mb-4 text-center">レビュー</h2>
 
-								<div th:unless="${hasUserAlreadyReviewed}" class="row justify-content-center mb-4">
+								<div sec:authorize="isAuthenticated()" class="row justify-content-center mb-4">
 									<div class="col-lg-4">
 										<a th:href="@{/houses/__${stores.id}__/prime/reviews/register}"
 											class="btn text-white shadow-sm w-100 nagoyameshi-btn">

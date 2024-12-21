@@ -40,7 +40,7 @@ public class ReserveController {
 		this.reserveService = reserveService;
 	}
 
-	@GetMapping("/reserve")
+	@GetMapping("prime/reserve")
 	public String index(
 			@AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl,
 			@PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
@@ -51,10 +51,10 @@ public class ReserveController {
 
 		model.addAttribute("reservePage", reservePage);
 
-		return "reserve/index";
+		return "prime/reserve/index";
 	}
 
-	@GetMapping("/houses/{id}/reserve/input")
+	@GetMapping("/houses/{id}/prime/reserve/input")
 	public String input(@PathVariable(name = "id") Integer id,
 	                    @ModelAttribute @Validated ReserveInputForm reserveInputForm,
 	                    BindingResult bindingResult,
@@ -83,10 +83,10 @@ public class ReserveController {
 	    redirectAttributes.addFlashAttribute("reserveInputForm", reserveInputForm);
 
 	    // 確認画面にリダイレクト
-	    return "redirect:/houses/{id}/reserve/confirm";
+	    return "redirect:/houses/{id}/prime/reserve/confirm";
 	}
 	
-	@GetMapping("/houses/{id}/reserve/confirm")
+	@GetMapping("/houses/{id}/prime/reserve/confirm")
 	public String confirm(@PathVariable(name = "id") Integer id,
 	                      @ModelAttribute ReserveInputForm reserveInputForm,
 	                      @AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl,
@@ -111,12 +111,12 @@ public class ReserveController {
 	    model.addAttribute("house", stores); // houseデータ
 	    model.addAttribute("reserveRegisterForm", reserveRegisterForm); // フォームデータ
 
-	    return "reserve/confirm";
+	    return "prime/reserve/confirm";
 	}
 	
 	
 	
-	@PostMapping("/houses/{id}/reserve/create")
+	@PostMapping("/houses/{id}/prime/reserve/create")
 	public String create(@ModelAttribute ReserveRegisterForm reserveRegisterForm) {
 	    // デバッグログ
 	    System.out.println("Create - House ID: " + reserveRegisterForm.getHouseId());
@@ -127,17 +127,17 @@ public class ReserveController {
 	    }
 
 	    reserveService.create(reserveRegisterForm);        
-	    return "redirect:/reserve?reserved";
+	    return "redirect:/prime/reserve?reserved";
 	}
 	
 	
-	@PostMapping("/reserve/{storesId}/delete")
+	@PostMapping("prime/reserve/{storesId}/delete")
     public String delete(@PathVariable(name = "storesId") Integer id, RedirectAttributes redirectAttributes) {        
 		reserveRepository.deleteById(id);
                 
         redirectAttributes.addFlashAttribute("successMessage", "店舗を削除しました。");
         
-        return "redirect:/reserve";
+        return "redirect:/prime/reserve";
     }   
     
 	
