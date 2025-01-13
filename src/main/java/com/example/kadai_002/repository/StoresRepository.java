@@ -12,6 +12,10 @@ public interface StoresRepository extends JpaRepository<Stores, Integer> {
 
     // 名前で検索 (部分一致)
     Page<Stores> findByStoreNameLike(String keyword, Pageable pageable);
+    
+    List<Stores> findByCategoryName(String categoryName);
+    
+    Page<Stores> findByCategoryNameOrderByCreatedDateDesc(String categoryName, Pageable pageable);
 
     // 名前または住所で検索 (作成日で降順)
     Page<Stores> findByStoreNameLikeOrStoreAddressLikeOrderByCreatedDateDesc(String nameKeyword, String addressKeyword, Pageable pageable);

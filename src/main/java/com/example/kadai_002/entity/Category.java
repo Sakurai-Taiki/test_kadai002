@@ -19,7 +19,7 @@ public class Category {
     @Column(name = "id")
     private Integer id;
     
-    @Column(name = "category_name")
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
     
     @Column(name = "create_date", insertable = false, updatable = false)

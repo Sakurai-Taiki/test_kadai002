@@ -1,12 +1,15 @@
 package com.example.kadai_002.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -19,10 +22,14 @@ public class Stores {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "category_id")
-    private Integer categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    @Column(name = "store_name")
+    @Column(name = "category_name", nullable = false)
+    private String categoryName;
+
+    @Column(name = "store_name", nullable = false)
     private String storeName;
 
     @Column(name = "photo_name")
@@ -38,10 +45,10 @@ public class Stores {
     private Integer maxBudget;
 
     @Column(name = "open_hour")
-    private String openHour;
+    private LocalTime openHour;
 
     @Column(name = "close_hour")
-    private String closeHour;
+    private LocalTime closeHour;
 
     @Column(name = "store_post_code")
     private String storePostCode;
@@ -63,4 +70,14 @@ public class Stores {
 
     @Column(name = "update_date", insertable = false, updatable = false)
     private Timestamp updatedDate;
+    
+    @Column(nullable = false)
+    private Boolean enabled = true;
+
+    public void setCategory(Category category) {
+        this.category = category;
+        if (category != null) {
+            this.categoryName = category.getCategoryName(); // 自動設定
+        }
+    }
 }

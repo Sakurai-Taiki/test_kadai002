@@ -13,9 +13,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "favorite")
+@Table(name = "cards")
 @Data
-public class Favorite {
+public class Card {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -25,16 +25,16 @@ public class Favorite {
 	@JoinColumn(name = "user_id")
 	private Users users;
 	
-	@ManyToOne
-    @JoinColumn(name = "store_id", nullable = false) // 外部キーとしてマッピング
-    private Stores stores;
+	@Column(name = "customer_id")
+	private String customerId;
 	
+	@Column(name = "subscription_id")
+	private String subscriptionId;
 	
-	@Column(name = "create_date", insertable = false, updatable = false)
-	private Timestamp createdDate;
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private Timestamp createdAt;
 	
-	@Column(name = "update_date", insertable = false, updatable = false)
-	private Timestamp updatedDate;
-
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private Timestamp updatedAt;
 
 }

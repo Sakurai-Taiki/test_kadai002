@@ -10,48 +10,56 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.kadai_002.entity.Category;
 import com.example.kadai_002.entity.Stores;
 import com.example.kadai_002.form.StoresEditForm;
 import com.example.kadai_002.form.StoresRegisterForm;
+import com.example.kadai_002.repository.CategoryRepository;
 import com.example.kadai_002.repository.StoresRepository;
+
 
 @Service
 public class StoresService {
 	private final StoresRepository StoresRepository;    
+	private final CategoryRepository CategoryRepository;
     
-    public StoresService(StoresRepository StoresRepository) {
-        this.StoresRepository = StoresRepository;        
+    public StoresService(StoresRepository storesRepository, CategoryRepository categoryRepository) {
+        this.StoresRepository = storesRepository;
+        this.CategoryRepository = categoryRepository;
     }    
     
     @Transactional
-    public void create(StoresRegisterForm StoresRegisterForm) {
-        Stores stores = new Stores();        
-        MultipartFile imageFile = StoresRegisterForm.getImageFile();
-        
-        if (!imageFile.isEmpty()) {
-            String imageName = imageFile.getOriginalFilename(); 
-            String hashedPhotoName = generateNewFileName(imageName);
-            Path filePath = Paths.get("src/main/resources/static/storage/" + hashedPhotoName);
-            copyImageFile(imageFile, filePath);
-            stores.setPhotoName(hashedPhotoName);
+    public void create(StoresRegisterForm storesRegisterForm) {
+        Stores stores = new Stores();
+
+        // カテゴリを設定
+        String categoryName = storesRegisterForm.getCategoryName();
+        if (categoryName != null && !categoryName.isEmpty()) {
+            Category category = CategoryRepository.findByCategoryName(categoryName);
+            if (category == null) {
+                throw new IllegalArgumentException("カテゴリが見つかりません: " + categoryName);
+            }
+            stores.setCategory(category);
+        } else {
+            throw new IllegalArgumentException("カテゴリ名が空です");
         }
-        
-        stores.setStoreName(StoresRegisterForm.getStoreName());                
-        stores.setDescription(StoresRegisterForm.getDescription());
-        stores.setMinBudget(StoresRegisterForm.getMinBudget());
-        stores.setMaxBudget(StoresRegisterForm.getMaxBudget());
-        stores.setSeats(StoresRegisterForm.getSeats());
-        stores.setStorePostCode(StoresRegisterForm.getStorePostCode());
-        stores.setStoreAddress(StoresRegisterForm.getStoreAddress());
-        stores.setStorePhoneNumber(StoresRegisterForm.getStorePhoneNumber());
-        stores.setOpenHour(StoresRegisterForm.getOpenHour());
-        stores.setCloseHour(StoresRegisterForm.getCloseHour());
-        stores.setCloseDay(StoresRegisterForm.getCloseDay());
-        
-                    
+
+        // 他のフィールドを設定
+        stores.setStoreName(storesRegisterForm.getStoreName());
+        stores.setDescription(storesRegisterForm.getDescription());
+        stores.setMinBudget(storesRegisterForm.getMinBudget());
+        stores.setMaxBudget(storesRegisterForm.getMaxBudget());
+        stores.setSeats(storesRegisterForm.getSeats());
+        stores.setStorePostCode(storesRegisterForm.getStorePostCode());
+        stores.setStoreAddress(storesRegisterForm.getStoreAddress());
+        stores.setStorePhoneNumber(storesRegisterForm.getStorePhoneNumber());
+        stores.setOpenHour(storesRegisterForm.getOpenHour());
+        stores.setCloseHour(storesRegisterForm.getCloseHour());
+        stores.setCloseDay(storesRegisterForm.getCloseDay());
+
+        // データベースに保存
         StoresRepository.save(stores);
-    }  
-    
+    }
     
     @Transactional
     public void update(StoresEditForm storesEditForm) {
@@ -80,9 +88,6 @@ public class StoresService {
                     
         StoresRepository.save(stores);
     }    
-    
-    
-    
     
     // UUIDを使って生成したファイル名を返す
     public String generateNewFileName(String fileName) {

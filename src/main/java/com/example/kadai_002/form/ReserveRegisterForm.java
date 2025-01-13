@@ -22,6 +22,7 @@ public class ReserveRegisterForm {
     @NotNull
     private Integer numberOfPeople;
     
+ 
 
     // コンストラクタを追加する場合
     public ReserveRegisterForm(Integer houseId, Integer userId, String checkinDate, String checkinTime, Integer numberOfPeople) {

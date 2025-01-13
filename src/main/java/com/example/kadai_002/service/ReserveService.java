@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.kadai_002.entity.Reserve;
 import com.example.kadai_002.entity.Stores;
 import com.example.kadai_002.entity.Users;
+import com.example.kadai_002.form.ReserveEditForm;
 import com.example.kadai_002.form.ReserveRegisterForm;
 import com.example.kadai_002.repository.ReserveRepository;
 import com.example.kadai_002.repository.StoresRepository;
@@ -32,12 +33,12 @@ public class ReserveService {
          Stores stores = storesRepository.getReferenceById(reserveRegisterForm.getHouseId());
          Users users = usersRepository.getReferenceById(reserveRegisterForm.getUserId());
          LocalDate checkinDate = LocalDate.parse(reserveRegisterForm.getCheckinDate());
-         LocalTime checkinTime = LocalTime.parse(reserveRegisterForm.getCheckinTime()); // 修正
+         LocalTime checkinTime = LocalTime.parse(reserveRegisterForm.getCheckinTime()); 
          
          reserve.setStores(stores);
          reserve.setUsers(users);
          reserve.setCheckinDate(checkinDate);
-         reserve.setCheckinTime(checkinTime); // ここも修正
+         reserve.setCheckinTime(checkinTime);
          reserve.setNumberOfPeople(reserveRegisterForm.getNumberOfPeople());
 
          reserveRepository.save(reserve);
@@ -48,4 +49,18 @@ public class ReserveService {
     public boolean isWithinCapacity(Integer numberOfPeople, Integer capacity) {
         return numberOfPeople <= capacity;
     }
+    
+  //予約変更機能
+  	@Transactional
+  	public void update(ReserveEditForm reserveEditForm) {
+  		Reserve reserve = reserveRepository.getReferenceById(reserveEditForm.getId());
+  		
+  		reserve.setUsers(reserveEditForm.getUsers());
+  		reserve.setStores(reserveEditForm.getStores());
+  		reserve.setCheckinDate(reserveEditForm.getCheckinDate());
+  		reserve.setCheckinTime(reserveEditForm.getCheckinTime());
+  		reserve.setNumberOfPeople(reserveEditForm.getNumberOfPeople());
+  		
+  		reserveRepository.save(reserve);
+  	}
 }
