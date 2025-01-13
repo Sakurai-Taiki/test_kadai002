@@ -6,7 +6,7 @@
 
 	<div th:replace="~{fragment :: styles}"></div>
 
-	<title>店舗詳細</title>
+	<title>店舗管理詳細</title>
 </head>
 
 <body>
@@ -21,8 +21,8 @@
 
 						<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0">
-								<li class="breadcrumb-item"><a th:href="@{/admin/stores}">店舗一覧</a></li>
-								<li class="breadcrumb-item active" aria-current="page">店舗詳細</li>
+								<li class="breadcrumb-item"><a th:href="@{/admin/stores}">店舗管理一覧</a></li>
+								<li class="breadcrumb-item active" aria-current="page">店舗管理詳細</li>
 							</ol>
 						</nav>
 
@@ -47,7 +47,8 @@
 									<span th:text="${stores.getId()}"></span>
 								</div>
 							</div>
-
+							
+							
 							<div class="row pb-2 mb-2 border-bottom">
 								<div class="col-4">
 									<span class="fw-bold">店舗名</span>
@@ -55,6 +56,17 @@
 
 								<div class="col">
 									<span th:text="${stores.getStoreName()}"></span>
+								</div>
+							</div>
+							
+							
+							<div class="row pb-2 mb-2 border-bottom">
+								<div class="col-4">
+									<span class="fw-bold">カテゴリ名</span>
+								</div>
+
+								<div class="col">
+									<span th:text="${stores.getCategoryName()}"></span>
 								</div>
 							</div>
 

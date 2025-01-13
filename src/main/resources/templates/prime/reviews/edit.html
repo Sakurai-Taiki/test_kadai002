@@ -20,14 +20,14 @@
                                  <ol class="breadcrumb mb-0">                        
                                     <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
                                      <li class="breadcrumb-item"><a th:href="@{/houses}">店舗一覧</a></li>
-                                     <li class="breadcrumb-item"><a th:href="@{/houses/__${stores.getId()}__}">店舗詳細</a></li>
+                                     <li class="breadcrumb-item"><a th:href="@{/houses/{storeId}(storeId=${stores.id})}">店舗詳細</a></li>
                                      <li class="breadcrumb-item active" aria-current="page">レビュー編集</li>
                                  </ol>
                              </nav>
                              
                              <h1 class="mb-4 text-center" th:text="${stores != null ? stores.storeName + 'のレビュー投稿' : 'レビュー投稿'}"></h1>
                                        
-                             <form method="post" th:action="@{/houses/__${stores.getId()}__/reviews/__${review.getId()}__/update}" th:object="${reviewEditForm}"> 
+                             <form method="post" th:action="@{/houses/{storesId}/prime/reviews/{reviewId}/update(storesId=${stores.id}, reviewId=${review.id})}" th:object="${reviewEditForm}"> 
                                  <input type="hidden" th:field="*{id}">
                                                                                                                             
                                  <div class="form-group row mb-3">

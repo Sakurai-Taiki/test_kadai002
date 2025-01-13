@@ -24,7 +24,9 @@
                             </nav>
                             
                             <h1 class="mb-4 text-center" th:text="${stores.getStoreName() + 'のレビュー投稿'}"></h1> 
-                                      
+                            <div th:if="${errorMessage}" style="color: red;">
+         <p th:text="${errorMessage}"></p>
+     </div>          
                             <form method="post" th:action="@{/houses/{storesId}/prime/reviews/create(storesId=${stores.id})}" th:object="${reviewRegisterForm}">                                                                            
                                 
                                 

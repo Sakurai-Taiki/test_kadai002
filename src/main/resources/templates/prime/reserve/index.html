@@ -46,7 +46,7 @@
 							</thead>
 							<tbody>
 								<tr th:each="reserve : ${reservePage}">
-									<td><a th:href="@{/stores/__${reserve.stores.id}__}"
+									<td><a th:href="@{/houses/__${reserve.stores.id}__}"
 											th:text="${reserve.stores.storeName}"></a></td>
 									<td th:text="${reserve.checkinDate}"></td>
 									<td th:text="${reserve.checkinTime}"></td>

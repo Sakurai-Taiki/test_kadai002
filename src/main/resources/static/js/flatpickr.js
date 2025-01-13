@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         minDate: "today"
     });
 
-    // 時間ピッカー設定
+    // 会員側時間ピッカー設定
     flatpickr("input[name='fromCheckinTime']", {
         locale: flatpickr.l10ns.ja, // 正しい日本語ロケール
         enableTime: true,           // タイムピッカーに設定
@@ -14,4 +14,25 @@ document.addEventListener('DOMContentLoaded', function() {
         dateFormat: "H:i",          // 時刻フォーマット
         time_24hr: true             // 24時間表示
     });
+    
+        // 管理者側時間ピッカー設定
+    flatpickr("input[name='openHour']", {
+        locale: flatpickr.l10ns.ja, // 正しい日本語ロケール
+        enableTime: true,           // タイムピッカーに設定
+        noCalendar: true,           // カレンダーを非表示
+        dateFormat: "H:i",          // 時刻フォーマット
+        time_24hr: true             // 24時間表示
+    });
+    
+    
+        flatpickr("input[name='closeHour']", {
+        locale: flatpickr.l10ns.ja, // 正しい日本語ロケール
+        enableTime: true,           // タイムピッカーに設定
+        noCalendar: true,           // カレンダーを非表示
+        dateFormat: "H:i",          // 時刻フォーマット
+        time_24hr: true             // 24時間表示
+    });
+    
+    
+
 });

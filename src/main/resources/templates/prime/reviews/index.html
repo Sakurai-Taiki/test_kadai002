@@ -29,19 +29,24 @@
 
 						<h1 class="mb-4 text-center" th:text="${stores.storeName + 'のレビュー一覧'}"></h1>
 
+
+<div th:if="${successMessage}" class="alert alert-info">
+                            <span th:text="${successMessage}"></span>
+                        </div>
+
 						<div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
 							<div th:each="review : ${reviewPage}">
 								<div class="col">
 									<div class="card">
 										<div class="card-body">
 											<div class="d-flex justify-content-between">
-												<h5 class="card-title" th:text="${review.getUser().getName()}"></h5>
+												<h5 class="card-title" th:text="${review.getUsers().getUserName()}"></h5>
 												<span sec:authorize="isAuthenticated()"
-													th:if="${#authentication.principal.user.id == review.getUser().getId()}">
-													<a th:href="@{/houses/__${stores.id}__/reviews/__${review.getId()}__/edit}"
+													th:if="${#authentication.principal.user.id == review.getUsers().getId()}">
+													<a th:href="@{/houses/__${stores.id}__/prime/reviews/__${review.getId()}__/edit}"
 														class="me-2">編集</a>
 													<a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal"
-														th:data-bs-target="${'#deleteReviewModal' + review.id()}">削除</a>
+														th:data-bs-target="${'#deleteReviewModal' + review.getId()}">削除</a>
 													<!-- 削除用モーダル -->
 													<div class="modal fade" th:id="${'deleteReviewModal' + review.id}"
 														tabindex="-1"
@@ -58,7 +63,7 @@
 																</div>
 																<div class="modal-footer">
 																	<form method="post"
-																		th:action="@{/houses/__${stores.id}__/reviews/__${review.id}__/delete}">
+																		th:action="@{/houses/__${stores.id}__/prime/reviews/__${review.id}__/delete}">
 																		<button type="submit"
 																			class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
 																	</form>
