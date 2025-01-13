@@ -1,5 +1,7 @@
 package com.example.kadai_002.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,6 +31,8 @@ import com.example.kadai_002.service.ReviewService;
 @RequestMapping("houses/{storesId}/prime/reviews")
 public class ReviewController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
+
     private final ReviewRepository reviewRepository;
     private final StoresRepository storesRepository;
     private final ReviewService reviewService;
@@ -44,9 +48,10 @@ public class ReviewController {
     public String index(@PathVariable(name = "storesId") Integer storesId,
                         @PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable,
                         Model model) {
-        Stores stores = storesRepository.getReferenceById(storesId);
-        Page<Review> reviewPage = reviewRepository.findByStoresOrderByCreatedDateDesc(stores, pageable);
+        Stores stores = storesRepository.findById(storesId)
+                .orElseThrow(() -> new IllegalArgumentException("指定された店舗が見つかりません"));
 
+        Page<Review> reviewPage = reviewRepository.findByStoresOrderByCreatedDateDesc(stores, pageable);
         model.addAttribute("stores", stores);
         model.addAttribute("reviewPage", reviewPage);
 
@@ -57,7 +62,7 @@ public class ReviewController {
     @GetMapping("/register")
     public String register(@PathVariable(name = "storesId") Integer storesId, Model model) {
         Stores stores = storesRepository.findById(storesId)
-            .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
+                .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
 
         model.addAttribute("stores", stores);
         model.addAttribute("reviewRegisterForm", new ReviewRegisterForm());
@@ -74,26 +79,27 @@ public class ReviewController {
                          RedirectAttributes redirectAttributes,
                          Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("stores", storesRepository.getReferenceById(storesId));
+            model.addAttribute("stores", storesRepository.findById(storesId).orElse(null));
             model.addAttribute("errorMessage", "入力内容にエラーがあります。");
             return "prime/reviews/register";
         }
 
         Stores stores = storesRepository.findById(storesId)
-            .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
+                .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
 
         Users users = usersDetailsImpl.getUser();
         try {
             reviewService.create(stores, users, reviewRegisterForm);
         } catch (IllegalArgumentException ex) {
+            logger.error("レビュー登録エラー: {}", ex.getMessage());
             model.addAttribute("stores", stores);
             model.addAttribute("reviewRegisterForm", reviewRegisterForm);
-            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("errorMessage", ex.getMessage()); // ユーザーにエラーメッセージを表示
             return "prime/reviews/register";
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "レビューを投稿しました。");
-        return "redirect:/houses/" + storesId + "/prime/reviews";
+        return String.format("redirect:/houses/%d/prime/reviews", storesId);
     }
 
     // レビュー編集ページ
@@ -101,18 +107,20 @@ public class ReviewController {
     public String edit(@PathVariable(name = "storesId") Integer storesId,
                        @PathVariable(name = "reviewId") Integer reviewId,
                        Model model) {
-        Stores stores = storesRepository.getReferenceById(storesId);
-        Review review = reviewRepository.getReferenceById(reviewId);
+        Stores stores = storesRepository.findById(storesId)
+                .orElseThrow(() -> new IllegalArgumentException("店舗が見つかりません"));
 
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("レビューが見つかりません"));
+
+        // フォーム用オブジェクトを作成してモデルに追加
         ReviewEditForm reviewEditForm = new ReviewEditForm(review.getId(), review.getScore(), review.getContent());
-
         model.addAttribute("stores", stores);
         model.addAttribute("review", review);
         model.addAttribute("reviewEditForm", reviewEditForm);
 
         return "prime/reviews/edit";
     }
-
     // レビュー更新処理
     @PostMapping("/{reviewId}/update")
     public String update(@PathVariable(name = "storesId") Integer storesId,
@@ -127,19 +135,19 @@ public class ReviewController {
 
         if (!review.getUsers().getId().equals(usersDetailsImpl.getUser().getId())) {
             redirectAttributes.addFlashAttribute("errorMessage", "このレビューを編集する権限がありません。");
-            return "redirect:/houses/" + storesId + "/prime/reviews";
+            return String.format("redirect:/houses/%d/prime/reviews", storesId);
         }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("stores", storesRepository.getReferenceById(storesId));
-            model.addAttribute("review", review);
+            model.addAttribute("stores", storesRepository.findById(storesId).orElse(null));
+            model.addAttribute("reviewEditForm", reviewEditForm);
             return "prime/reviews/edit";
         }
 
         reviewService.update(reviewEditForm);
         redirectAttributes.addFlashAttribute("successMessage", "レビューを編集しました。");
 
-        return "redirect:/houses/" + storesId + "/prime/reviews";
+        return String.format("redirect:/houses/%d/prime/reviews", storesId);
     }
 
     // レビュー削除処理
@@ -147,10 +155,13 @@ public class ReviewController {
     public String delete(@PathVariable(name = "storesId") Integer storesId,
                          @PathVariable(name = "reviewId") Integer reviewId,
                          RedirectAttributes redirectAttributes) {
-        reviewRepository.deleteById(reviewId);
+        reviewRepository.findById(reviewId)
+                .ifPresentOrElse(
+                        reviewRepository::delete,
+                        () -> logger.warn("削除対象のレビューが見つかりません: reviewId={}", reviewId)
+                );
 
         redirectAttributes.addFlashAttribute("successMessage", "レビューを削除しました。");
-
-        return "redirect:/houses/" + storesId + "/prime/reviews";
+        return String.format("redirect:/houses/%d/prime/reviews", storesId);
     }
 }

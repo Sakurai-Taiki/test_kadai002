@@ -25,6 +25,9 @@ import com.example.kadai_002.repository.ReserveRepository;
 import com.example.kadai_002.repository.StoresRepository;
 import com.example.kadai_002.security.UsersDetailsImpl;
 import com.example.kadai_002.service.ReserveService;
+import com.example.kadai_002.service.StripeService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ReserveController {
@@ -32,12 +35,14 @@ public class ReserveController {
 	private final ReserveRepository reserveRepository;
 	private final StoresRepository storesRepository;
 	private final ReserveService reserveService;
+	private final StripeService stripeService;
 
 	public ReserveController(ReserveRepository reserveRepository, StoresRepository storesRepository,
-			ReserveService reserveService) {
+			ReserveService reserveService, StripeService stripeService) {
 		this.reserveRepository = reserveRepository;
 		this.storesRepository = storesRepository;
 		this.reserveService = reserveService;
+		this.stripeService = stripeService;
 	}
 
 	@GetMapping("prime/reserve")
@@ -90,6 +95,7 @@ public class ReserveController {
 	public String confirm(@PathVariable(name = "id") Integer id,
 	                      @ModelAttribute ReserveInputForm reserveInputForm,
 	                      @AuthenticationPrincipal UsersDetailsImpl usersDetailsImpl,
+	                      HttpServletRequest httpServletRequest,
 	                      Model model) {
 
 	    // 店舗情報を取得
@@ -107,15 +113,18 @@ public class ReserveController {
 	    reserveRegisterForm.setCheckinTime(reserveInputForm.getFromCheckinTime());
 	    reserveRegisterForm.setNumberOfPeople(reserveInputForm.getNumberOfPeople());
 
+	    String sessionId = stripeService.createStripeSession(stores.getStoreName(), reserveRegisterForm, httpServletRequest);
+	    
 	    // Modelに追加
 	    model.addAttribute("house", stores); // houseデータ
 	    model.addAttribute("reserveRegisterForm", reserveRegisterForm); // フォームデータ
+	    model.addAttribute("sessionId", sessionId);
 
 	    return "prime/reserve/confirm";
 	}
 	
 	
-	
+
 	@PostMapping("/houses/{id}/prime/reserve/create")
 	public String create(@ModelAttribute ReserveRegisterForm reserveRegisterForm) {
 	    // デバッグログ
